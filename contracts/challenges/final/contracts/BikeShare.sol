@@ -3,8 +3,9 @@
 pragma solidity ^0.4.21;
 
 
-import "../../library/Ownable.sol";
-import "../../library/SafeMath.sol";
+import "../../../library/Ownable.sol";
+import "../../../library/SafeMath.sol";
+
 
 
 contract BikeShare is Ownable {
