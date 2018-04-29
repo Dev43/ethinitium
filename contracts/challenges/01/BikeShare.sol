@@ -38,20 +38,26 @@ contract BikeShare {
     /**************************************
     * Rent a bike
     **************************************/
-    function rentBike() canRent(_bikeNumber) {}
+    function rentBike()  {}
 
     /**************************************
     * Ride a bike
     **************************************/
-    function rideBike() hasRental hasCredits(_kms) {}
+    function rideBike() {}
 
     /**************************************
     * Return the bike
     **************************************/
-    function returnBike() hasRental {}
+    function returnBike() {}
 
     /**************************************
     * default payable function, will call purchaseCredits
     **************************************/
     function() {}
 }
+
+/*
+  THIS CONTRACT IS ONLY MEANT TO BE USED FOR EDUCATIONAL PURPOSES. ANY AND ALL USES IS
+  AT A USER'S OWN RISK AND THE AUTHOR HAS NO RESPONSIBILITY FOR ANY LOSS OF ANY KIND STEMMING
+  THIS CODE.
+ */

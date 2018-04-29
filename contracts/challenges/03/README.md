@@ -1,19 +1,9 @@
 # BikeShare Solidity challenge
 
-## 02 Variables
+## 03 Using the context
 
-In this excercise, we will add the different global variables necessary for this contract
+In this exercise, we will start implementing a few interesting functions using some of the context variables we saw earlier.
 
-Add these global variables to the contract along with the correct data type:
-
--   Initial credit price (creditPrice), should be worth 1 finney
--  Initial cost per kilometer (cpkm) should be equal to 5
-- Initial credits received for donating a bike (donateCredits) should be equal to 500
-- Initial credits given for repairing a bike (repairCredits) should be equal to 250
-- Mapping to keep track of the bikes rented (bikeRented). Each user has an address, and each bike is identified by a number
-- Mapping to keep track of user's credit balances. Each user has an address, and a total amount of credits
-- A new "type" of name Bike (Bike). A bike has an owner, knows whether it is rented or not, and has a total amount of kilometers ridden
-- An array of said bike (bikes)
-
-
-*For simplicity purposes every number should be represented as a uint256*
+- In the constructor, initialize the bike array with 5 new bikes, each of the bikes owner is you. Initialize the struct with default values.
+- Implement the purchaseCredit function. The amount of credits received should be proportional to the amount of ether sent. After the function runs, the user should have a balance of credits.
+- Implement a getCreditBalance function. It should take in as input and address and simply read the credits mapping and return the credits balance of a user.

@@ -18,72 +18,92 @@ contract BikeShare {
     }
 
     // Array of said bikes
-    Bike[] bikes;
+    Bike[] public bikes;
 
     // Mapping to keep track of the bikes rented
-    mapping(address => uint256) bikeRented;
+    mapping(address => uint256) public bikeRented;
 
     // Mapping to keep track of user's credit balances
-    mapping(address => uint256) credits;
+    mapping(address => uint256) public credits;
 
     // Initial credit price
-    uint256 creditPrice = 1 finney;
+    uint256 internal creditPrice = 1 finney;
     // Initial cost per kilometer
-    uint256 cpkm = 5;
+    uint256 internal cpkm = 5;
     // Initial credits received for donating a bike
-    uint256 donateCredits = 500;
+    uint256 internal donateCredits = 500;
     // Initial credits given for repairing a bike
-    uint256 repairCredits = 250;
+    uint256 internal repairCredits = 250;
 
     /**************************************
     * constructor
     **************************************/
-    function BikeShare() {
-
+    function BikeShare() public {
+      // Initialize with 5 bikes from the bikeshare owner
+      for (uint8 i = 0; i < 5; i++) {
+        bikes.push(Bike({ owner: msg.sender, isRented: false, kms: 0 }));
+      }
     }
 
     /**************************************
     * Functions only accessible by the owner
     **************************************/
-    function setCreditPrice()  {}
-    function setCPKM()  {}
-    function setDonateCredits()  {}
-    function setRepairCredits()  {}
+    function setCreditPrice() external {}
+    function setCPKM() external {}
+    function setDonateCredits() external {}
+    function setRepairCredits() external {}
 
     /**************************************
     * getters not provided by compiler
     **************************************/
-    function getAvailable(){}
+    function getAvailable() public view returns (bool[]) {}
 
+
+   /**************************************
+    * Function to get the credit balance of a user
+    **************************************/
+    function getCreditBalance(address _addr) public view returns (uint256) {
+      return credits[_addr];
+    }
     /**************************************
     * Function to purchase Credits
     **************************************/
-    function purchaseCredits() {}
+    function purchaseCredits() private {
+      // Calculate the amount of credits the user will get
+      // NOTE: integer division floors the result
+      uint256 amount = msg.value / creditPrice;
+      // Add to the amount of credits the user has
+      credits[msg.sender] += amount;
+    }
+
+
 
     /**************************************
     * Donating function
     **************************************/
-    function donateBike() {}
+    function donateBike() external {}
 
     /**************************************
     * Rent a bike
     **************************************/
-    function rentBike() {}
+    function rentBike(uint256 _bikeNumber) external {}
 
     /**************************************
     * Ride a bike
     **************************************/
-    function rideBike() {}
+    function rideBike(uint256 _kms) external {}
 
     /**************************************
     * Return the bike
     **************************************/
-    function returnBike() {}
+    function returnBike() external {}
 
     /**************************************
     * default payable function, will call purchaseCredits
     **************************************/
-    function() {}
+    function() payable public {
+      purchaseCredits();
+    }
 }
 
 /*

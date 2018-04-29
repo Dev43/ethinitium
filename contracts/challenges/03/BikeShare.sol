@@ -14,17 +14,17 @@ contract BikeShare {
     struct Bike {
       address owner;
       bool isRented;
-      uint32 kms;
+      uint256 kms;
     }
 
     // Array of said bikes
-    Bike[] public bikes;
+    Bike[] bikes;
 
     // Mapping to keep track of the bikes rented
-    mapping(address => uint32) public bikeRented;
+    mapping(address => uint256) bikeRented;
 
     // Mapping to keep track of user's credit balances
-    mapping(address => uint256) public credits;
+    mapping(address => uint256) credits;
 
     // Initial credit price
     uint256 creditPrice = 1 finney;
@@ -39,7 +39,10 @@ contract BikeShare {
     * constructor
     **************************************/
     function BikeShare() {
-
+      // Initialize with 5 bikes from the bikeshare owner
+      for (uint8 i = 0; i < 5; i++) {
+        bikes.push(Bike({ owner: msg.sender, isRented: false, kms: 0 }));
+      }
     }
 
     /**************************************
@@ -55,10 +58,25 @@ contract BikeShare {
     **************************************/
     function getAvailable(){}
 
+
+   /**************************************
+    * Function to get the credit balance of a user
+    **************************************/
+    function getCreditBalance(address _addr) returns (uint256) {
+      return credits[_addr];
+    }
     /**************************************
     * Function to purchase Credits
     **************************************/
-    function purchaseCredits() {}
+    function purchaseCredits() {
+      // Calculate the amount of credits the user will get
+      // NOTE: integer division floors the result
+      uint256 amount = msg.value / creditPrice;
+      // Add to the amount of credits the user has
+      credits[msg.sender] += amount;
+    }
+
+
 
     /**************************************
     * Donating function
@@ -68,20 +86,26 @@ contract BikeShare {
     /**************************************
     * Rent a bike
     **************************************/
-    function rentBike() canRent(_bikeNumber) {}
+    function rentBike()  {}
 
     /**************************************
     * Ride a bike
     **************************************/
-    function rideBike() hasRental hasCredits(_kms) {}
+    function rideBike()  {}
 
     /**************************************
     * Return the bike
     **************************************/
-    function returnBike() hasRental {}
+    function returnBike() {}
 
     /**************************************
     * default payable function, will call purchaseCredits
     **************************************/
     function() {}
 }
+
+/*
+  THIS CONTRACT IS ONLY MEANT TO BE USED FOR EDUCATIONAL PURPOSES. ANY AND ALL USES IS
+  AT A USER'S OWN RISK AND THE AUTHOR HAS NO RESPONSIBILITY FOR ANY LOSS OF ANY KIND STEMMING
+  THIS CODE.
+ */

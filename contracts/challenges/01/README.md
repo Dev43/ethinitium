@@ -2,7 +2,7 @@
 
 ## 01 Structure
 
-In this excercise, we will outline the structure of the contract.
+In this exercise, we will outline the structure of the contract.
 
 Create a BikeShare contract, with the following:
 

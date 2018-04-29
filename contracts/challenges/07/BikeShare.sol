@@ -165,18 +165,6 @@ contract BikeShare is Ownable {
     function() payable public {
         purchaseCredits();
     }
-
-    // Challenge 1: Refactor the code so we only use 1 mapping
-    // Challenge 2: Bikers should be able to transfer credifts to a friend
-    // Challenge 3: As of right now, the Ether is locked in the contract and cannot move,
-    // make the Ether transferrable to your address immediately upon receipt
-
-    // Advanced challenge 1: Decouple the "database" aka mapping into another contract.
-    // Advanced challenge 2: Include an overflow protection library (or inherit from a contract)
-    // Advanced challenge 3: Develop an efficient way to track and store kms per rental, per user
-    // Advanced challenge 4: Add a repair bike bounty where the work can be claimed by a user and verified by another user
-    // Advanced challenge 5: Allow all users to vote on how many credits should be given for a donated bike within a time frame
-
 }
 
 /*

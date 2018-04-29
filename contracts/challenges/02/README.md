@@ -2,12 +2,12 @@
 
 ## 02 Variables
 
-In this excercise, we will add the different global variables necessary for this contract
+In this exercise, we will add the different global variables necessary for this contract
 
 Add these global variables to the contract along with the correct data type:
 
--   Initial credit price (creditPrice), should be worth 1 finney
--  Initial cost per kilometer (cpkm) should be equal to 5
+- Initial credit price (creditPrice), should be worth 1 finney
+- Initial cost per kilometer (cpkm) should be equal to 5
 - Initial credits received for donating a bike (donateCredits) should be equal to 500
 - Initial credits given for repairing a bike (repairCredits) should be equal to 250
 - Mapping to keep track of the bikes rented (bikeRented). Each user has an address, and each bike is identified by a number
