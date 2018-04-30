@@ -2,8 +2,8 @@
 
 pragma solidity ^0.4.15;
 
-import './SafeMath.sol';
-import './Ownable.sol';
+import "../../library/SafeMath.sol";
+import "../../library/Ownable.sol";
 
 contract CourseToken is Ownable {
 
@@ -26,42 +26,42 @@ contract CourseToken is Ownable {
     function allowance(address _owner, address _spender) public constant returns (uint256) { return 0; }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-      require(_to != address(0));
-      require(_value <= balances[msg.sender]);
-      require(msg.sender == owner);
+        require(_to != address(0));
+        require(_value <= balances[msg.sender]);
+        require(msg.sender == owner);
 
-      balances[msg.sender] = balances[msg.sender].sub(_value);
-      balances[_to] = balances[_to].add(_value);
-      Transfer(msg.sender, _to, _value);
-      return true;
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        balances[_to] = balances[_to].add(_value);
+        Transfer(msg.sender, _to, _value);
+        return true;
     }
 
     function transferMany(address[] _batchOfAddresses) external onlyOwner returns (bool) {
-      for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
-          deliverTokens(_batchOfAddresses[i]);
-      }
-      return true;
+        for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
+            deliverTokens(_batchOfAddresses[i]);
+        }
+        return true;
     }
 
     function deliverTokens(address _to) internal {
-      if (balances[_to] == 0) {
-        balances[_to] = balances[_to].add(1);
-        balances[msg.sender] = balances[msg.sender].sub(1);
-        Transfer(msg.sender, _to, 1);
-      }
+        if (balances[_to] == 0) {
+            balances[_to] = balances[_to].add(1);
+            balances[msg.sender] = balances[msg.sender].sub(1);
+            Transfer(msg.sender, _to, 1);
+        }
     }
 
 
     function balanceOf(address _owner) public constant returns (uint256 balance) {
-      return balances[_owner];
+        return balances[_owner];
     }
 
     function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {
-      totalSupply = totalSupply.add(_amount);
-      balances[_to] = balances[_to].add(_amount);
-      Mint(_to, _amount);
-      Transfer(address(0), _to, _amount);
-      return true;
+        totalSupply = totalSupply.add(_amount);
+        balances[_to] = balances[_to].add(_amount);
+        Mint(_to, _amount);
+        Transfer(address(0), _to, _amount);
+        return true;
     }
 
 }
