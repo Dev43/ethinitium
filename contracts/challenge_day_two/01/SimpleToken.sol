@@ -1,0 +1,43 @@
+
+
+pragma solidity ^0.4.21;
+
+import "../../library/SafeMath.sol";
+import "../../library/Ownable.sol";
+
+contract SimpleToken is Ownable {
+
+    using SafeMath for uint256;
+
+    /* ERC20 INTERFACE */
+    string public name = "TOKEN NAME";
+    string public symbol = "SYMBOL";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 0;
+
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping(address => uint256) balances;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Mint(address indexed to, uint256 amount);
+
+
+    // Not implemented
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {}
+    function approve(address _spender, uint256 _value) public returns (bool) {}
+    function allowance(address _owner, address _spender) public constant returns (uint256) {}
+
+    function balanceOf(address _owner) public constant returns (uint256 balance) {}
+
+    function transfer(address _to, uint256 _value) public returns (bool) {}
+
+    /* END OF ERC20 INTERFACE */
+
+    // Default max supply is 1000
+    uint256 maxSupply = 1000;
+
+    // Minting function, adds tokens to our total supply
+    function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {}
+
+}
