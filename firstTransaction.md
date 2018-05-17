@@ -16,11 +16,11 @@ params: [{
 ```
 ### To get 1 Ether
 ```bash
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{ "from": "0x6787Fc48C0D68361d06C617fE5453bf83bd42888", "to":"**<YOUR ADDRESS HERE>**", "gas": "0x76c0", "gasPrice": "0x9184e72a000", "value": "0xde0b6b3a7640000"}],"id":1}' http://138.197.137.83
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{ "from": "0x6787Fc48C0D68361d06C617fE5453bf83bd42888", "to":"**<YOUR ADDRESS HERE>**", "gas": "0x76c0", "gasPrice": "0x9184e72a000", "value": "0xde0b6b3a7640000"}],"id":1}' ["**<NODE URL>**"]
 ```
 ### To look at the transaction
 ```bash
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["**<TRANSACTION HASH>**"],"id":1}' http://138.197.137.83
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["**<TRANSACTION HASH>**"],"id":1}' ["**<NODE URL>**"]
 ```
 
 
