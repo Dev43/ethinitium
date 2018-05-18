@@ -45,4 +45,4 @@ Set the following function as a function that does not change state, but reads f
 
 Challenge:
 
-If purchaseCredits is internal, how can we go about purchasing credits by simply sending a value transaction to the contract (aka sending ETH only, no calldata)
+If purchaseCredits is private, how can we go about purchasing credits by simply sending a value transaction to the contract (aka sending ETH only, no calldata)
