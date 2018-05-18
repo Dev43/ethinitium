@@ -23,7 +23,7 @@ contract SimpleCrowdfund is SimpleToken {
     }
 
     // Function that actually buys the tokens
-    function buyTokens(address _to) public returns (bool) {
+    function buyTokens(address _to) public payable returns (bool) {
         // Crowdsfund ends if current block number is abve 2000
         require(block.number > startBlock + 2000);
         // Ensure the address passed is valid
@@ -54,7 +54,7 @@ contract SimpleCrowdfund is SimpleToken {
     }
 
     // If user simply send ETH, call buy tokens with the message sender
-    function() public {
+    function() public payable {
         buyTokens(msg.sender);
     }
 
