@@ -13,7 +13,7 @@ Set following functions to be accessible by anyone, including functions inside t
 
 - Constructor
 - getAvailable
-- getCreditBalances
+- getCreditBalance
 - fallback function
 
 Set following functions to be accessible by anyone, excluding functions inside the contract:
