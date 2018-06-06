@@ -86,12 +86,12 @@ contract BikeShare {
     /**************************************
     * Rent a bike
     **************************************/
-    function rentBike(uint256 _bikeNumber) external {}
+    function rentBike() external {}
 
     /**************************************
     * Ride a bike
     **************************************/
-    function rideBike(uint256 _kms) external {}
+    function rideBike() external {}
 
     /**************************************
     * Return the bike
