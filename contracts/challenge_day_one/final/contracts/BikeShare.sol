@@ -53,7 +53,7 @@ contract BikeShare is Ownable {
     /**************************************
     * Events
     **************************************/
-    event Donation(address _from, uint256 _amount);
+    event Donation(address indexed _from, uint256 _amount);
     event CreditsPurchased(address indexed _to, uint256 _ethAmount, uint256 _creditAmount);
     event BikeRented(address _renter, uint256 indexed _bikeNumber);
     event BikeRidden(address _renter, uint256 indexed _bikeNumber, uint256 _kms);
