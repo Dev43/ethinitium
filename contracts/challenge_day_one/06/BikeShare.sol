@@ -52,10 +52,6 @@ contract BikeShare is Ownable {
     /**************************************
     * Modifiers
     **************************************/
-    modifier onlyBikeOwner(uint256 _bikeNumber) {
-        require(bikes[_bikeNumber].owner == msg.sender);
-        _;
-    }
     modifier canRent(uint256 _bikeNumber) {
         require(bikeRented[msg.sender] == 0 && !bikes[_bikeNumber].isRented);
         _;
