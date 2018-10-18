@@ -24,7 +24,6 @@ async function timeJump(timeToInc) {
     let proof = web3.sha3(contractAddress.slice(2) + value.slice(2).padStart(64, '0') + nonce.slice(2).padStart(64, '0'), { encoding: 'hex' }); 
     // We want to remove the 0x at the beginning   
     let sig = web3.eth.sign(account, proof).slice(2);  
-
     let signature = {      
         r: '0x' + sig.slice(0,64),      
         s: '0x' + sig.slice(64,128),    
@@ -39,7 +38,6 @@ async function timeJump(timeToInc) {
 contract('PaymentChannel', function(accounts) {
 
   const alice = accounts[0];
-  console.log(accounts)
   const bob = accounts[1];
 
   it("should deploy the contract and open a channel", async() => {

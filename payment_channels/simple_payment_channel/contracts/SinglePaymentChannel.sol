@@ -24,9 +24,11 @@ contract SinglePaymentChannel {
   // Sends a proof (bytes32 hash) and a nonce with the value that it needs to be
   function OpenChannel(address _bob) external payable {
     // Ensure we are sending at least some ether
-    require(msg.value > 0);
+    require(msg.value > 0, "you must send ether to open a channel");
     // ensure alice is the only one able to open the channel
-    require(alice == msg.sender);
+    require(alice == msg.sender, "only alice can open a channel");
+    // Ensure we are not sending a garbage address
+    require(_bob != address(0), "bob's address cannot be the 0 address");
     // add bob's address
     bob = _bob;
     // startdate is now
@@ -48,9 +50,9 @@ contract SinglePaymentChannel {
     uint256 nonce
   ) external returns(bool) {
     // Ensure the message from alice is valid
-    require(VerifyValidityOfMessage(proof, v[0], r[0], s[0], value, nonce, alice));
+    require(VerifyValidityOfMessage(proof, v[0], r[0], s[0], value, nonce, alice), "alice's proof is not valid");
     // Ensure the message from bob is valid
-    require(VerifyValidityOfMessage(proof, v[1], r[1], s[1], value, nonce, bob));
+    require(VerifyValidityOfMessage(proof, v[1], r[1], s[1], value, nonce, bob), "bob's proof is not valid");
     // Update the last payment information
     lastPaymentProof = Payment({nonce: nonce, value: value});
     // Start the challenge period
@@ -69,13 +71,13 @@ contract SinglePaymentChannel {
     uint256 nonce
     ) external  returns(bool) {
       // Ensure we are in the challenge period
-      require(startChallengePeriod > 0);
+      require(startChallengePeriod > 0, "channel is not in closed state");
       // Ensure we are in the challenge period
-      require(startChallengePeriod + challengePeriodLength > now);
+      require(startChallengePeriod + challengePeriodLength > now, "challenge period has not ended");
       // Ensure the message from alice is valid
-      require(VerifyValidityOfMessage(proof, v[0], r[0], s[0], value, nonce, alice));
+      require(VerifyValidityOfMessage(proof, v[0], r[0], s[0], value, nonce, alice), "alice's proof is not valid");
       // Ensure the message from bob is valid
-      require(VerifyValidityOfMessage(proof, v[1], r[1], s[1], value, nonce, bob));
+      require(VerifyValidityOfMessage(proof, v[1], r[1], s[1], value, nonce, bob), "bob's proof is not valid");
       // if the challenge is successful, update the lastPaymentProof
       lastPaymentProof = Payment({nonce: nonce, value: value});
       return true;
@@ -84,9 +86,9 @@ contract SinglePaymentChannel {
   // Used to finalize payment of the channel
   function FinalizeChannel() external returns(bool) {
     // Ensure the challenge period exists
-    require(startChallengePeriod > 0);
+    require(startChallengePeriod > 0, "channel is not in closed state");
     // Ensure the challenge period has ended
-    require(startChallengePeriod + challengePeriodLength < now);
+    require(startChallengePeriod + challengePeriodLength < now, "challenge period has not ended");
     
     // Finally transfer the ether
     bob.transfer(lastPaymentProof.value);
