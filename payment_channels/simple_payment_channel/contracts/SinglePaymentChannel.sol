@@ -55,6 +55,10 @@ contract SinglePaymentChannel {
     require(VerifyValidityOfMessage(proof, v[0], r[0], s[0], value, nonce, alice), "alice's proof is not valid");
     // Ensure the message from bob is valid
     require(VerifyValidityOfMessage(proof, v[1], r[1], s[1], value, nonce, bob), "bob's proof is not valid");
+    
+    // Ensure one can only close the channel once
+    require(startChallengePeriod == 0, "cannot close the channel multiple times");
+
     // Update the last payment information
     lastPaymentProof = Payment({nonce: nonce, value: value});
     // Start the challenge period
