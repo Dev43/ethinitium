@@ -22,8 +22,7 @@ Before talking about what a payment channel is, let's first understand why we ne
 
 **TALK ABOUT FIRST SOLUTION AS IT DOES NOT MAKE IT POSSIBLE TO TRANSFER MONEY TO A FROM AND WHY**
 
-### Data needed
-
+### Data required
 
 ## Token Payment Channel
 

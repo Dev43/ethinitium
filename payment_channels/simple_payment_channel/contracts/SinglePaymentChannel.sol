@@ -25,10 +25,12 @@ contract SinglePaymentChannel {
   function OpenChannel(address _bob) external payable {
     // Ensure we are sending at least some ether
     require(msg.value > 0, "you must send ether to open a channel");
-    // ensure alice is the only one able to open the channel
+    // Ensure alice is the only one able to open the channel
     require(alice == msg.sender, "only alice can open a channel");
     // Ensure we are not sending a garbage address
     require(_bob != address(0), "bob's address cannot be the 0 address");
+    // Ensure this is a single use payment channel
+    require(startDate == 0, "you cannot reopen a payment channel");
     // add bob's address
     bob = _bob;
     // startdate is now
