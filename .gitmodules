@@ -1,0 +1,3 @@
+[submodule "payment_channels/unidirectional_payment_channel/payment-channel"]
+	path = payment_channels/unidirectional_payment_channel/payment-channel
+	url = https://github.com/mattdf/payment-channel
