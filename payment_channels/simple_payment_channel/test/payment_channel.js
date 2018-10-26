@@ -47,7 +47,7 @@ contract('PaymentChannel', function(accounts) {
     assert.equal((await c.amountDeposited.call()), web3.toWei("1", "ether"))
     // let's ensure that we can create a signature and validate with our smart contract:
     let sig = createSig(alice, c.address, web3.toHex("100000000000000000"), web3.toHex(1))
-    let verify = await c.VerifyValidityOfMessage.call(sig.proof, sig.signature.v, sig.signature.r, sig.signature.s, web3.toHex("100000000000000000"), web3.toHex(1), {from: alice})
+    let verify = await c.VerifyValidityOfMessage.call(sig.proof, sig.signature.v, sig.signature.r, sig.signature.s, web3.toHex("100000000000000000"), web3.toHex(1), alice, {from: bob})
     assert(verify, "Verification failed");
   })
 
@@ -58,7 +58,7 @@ contract('PaymentChannel', function(accounts) {
     // Let's send 0.1 ether to bob, that way, alice will receive 0.9 ETH and bob 0.1 ETH
     let aliceSig = createSig(alice, c.address, web3.toHex("100000000000000000"), web3.toHex(1))
     // Verify our signature works
-    let verifyAlice = await c.VerifyValidityOfMessage.call(aliceSig.proof, aliceSig.signature.v, aliceSig.signature.r, aliceSig.signature.s, web3.toHex("100000000000000000"), web3.toHex(1), {from: alice})
+    let verifyAlice = await c.VerifyValidityOfMessage.call(aliceSig.proof, aliceSig.signature.v, aliceSig.signature.r, aliceSig.signature.s, web3.toHex("100000000000000000"), web3.toHex(1), alice, {from: bob})
     assert(verifyAlice, "Verification failed for alice");
 
     // Now bob closes the channel
@@ -91,14 +91,14 @@ contract('PaymentChannel', function(accounts) {
     // Let's send 0.1 ether to bob, that way, alice will receive 0.9 ETH and bob 0.1 ETH
     let oldAliceSig = createSig(alice, c.address, web3.toHex("100000000000000000"), web3.toHex(1))
     // Verify our signature works
-    let verifyAlice = await c.VerifyValidityOfMessage.call(oldAliceSig.proof, oldAliceSig.signature.v, oldAliceSig.signature.r, oldAliceSig.signature.s, web3.toHex("100000000000000000"), web3.toHex(1), {from: alice})
+    let verifyAlice = await c.VerifyValidityOfMessage.call(oldAliceSig.proof, oldAliceSig.signature.v, oldAliceSig.signature.r, oldAliceSig.signature.s, web3.toHex("100000000000000000"), web3.toHex(1), alice, {from: bob})
     assert(verifyAlice, "Verification failed for alice");
 
     ///////////////////////////////////// New SIGNATURE /////////////////////////////////////
     // Let's send 0.1 ether to bob, that way, alice will receive 0.8 ETH and bob 0.2 ETH notice the different nonce!
-    let newAliceSig = createSig(alice, c.address, web3.toHex("200000000000000000"), web3.toHex(2))
+    let newBobSig = createSig(bob, c.address, web3.toHex("200000000000000000"), web3.toHex(2))
     // Verify our signature works
-    verifyAlice = await c.VerifyValidityOfMessage.call(newAliceSig.proof, newAliceSig.signature.v, newAliceSig.signature.r, newAliceSig.signature.s, web3.toHex("200000000000000000"), web3.toHex(2), {from: alice})
+    verifyAlice = await c.VerifyValidityOfMessage.call(newBobSig.proof, newBobSig.signature.v, newBobSig.signature.r, newBobSig.signature.s, web3.toHex("200000000000000000"), web3.toHex(2), bob,  {from: alice})
     assert(verifyAlice, "Verification failed for alice");
 
     // Now bob closes the channel with an old message
@@ -109,7 +109,7 @@ contract('PaymentChannel', function(accounts) {
     assert.equal(lastPayment[0].toString(), 1, lastPayment[1].toString(), "100000000000000000" )
     
     // Alice now challenges bob's assertion
-    let challenge = await c.Challenge(newAliceSig.proof, newAliceSig.signature.v, newAliceSig.signature.r, newAliceSig.signature.s, web3.toHex("200000000000000000"), web3.toHex(2), {from: alice})
+    let challenge = await c.Challenge(newBobSig.proof, newBobSig.signature.v, newBobSig.signature.r, newBobSig.signature.s, web3.toHex("200000000000000000"), web3.toHex(2), {from: alice})
     assert(challenge, "Challenge failed")
     // Here we add a time jump of 16 minutes
     await timeJump(16*60)

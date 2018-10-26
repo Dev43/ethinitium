@@ -42,7 +42,7 @@ contract SinglePaymentChannel {
   }
 
 
-  // Anyone can close the channel, it begins the challenge period
+  // Anyone can close this channel
   function CloseChannel(
     bytes32 _proof,
     uint8 _v,
@@ -51,13 +51,13 @@ contract SinglePaymentChannel {
     uint256 _value,
     uint256 _nonce
   ) external returns(bool) {
-    // Ensure the message from alice is valid
-    require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce), "alice's proof is not valid");
-    // Ensure the message from bob is valid
-    
     // Ensure one can only close the channel once
     require(startChallengePeriod == 0, "cannot close the channel multiple times");
-
+    if(msg.sender == alice) {
+      require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, bob), "alice's proof is not valid");
+    } else {
+      require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, alice), "bob's proof is not valid");
+    }
     // Update the last payment information
     lastPaymentProof = Payment({nonce: _nonce, value: _value});
     // Start the challenge period
@@ -79,8 +79,14 @@ contract SinglePaymentChannel {
       require(startChallengePeriod > 0, "channel is not in closed state");
       // Ensure we are in the challenge period
       require(startChallengePeriod + challengePeriodLength > now, "challenge period has not ended");
+      // If the sender is alice, then she has to show a message from bob with a valid nonce
+      if(msg.sender == alice) {
+        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, bob), "alice's proof is not valid");
+      } else {
+        // Else bob has to show a valid message from Alice with a valid nonce
+        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, alice), "bob's proof is not valid");
+      }
       // Ensure the message from alice is valid
-      require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce), "alice's proof is not valid");
       // if the challenge is successful, update the lastPaymentProof
       lastPaymentProof = Payment({nonce: _nonce, value: _value});
       return true;
@@ -108,7 +114,8 @@ contract SinglePaymentChannel {
     bytes32 _r,
     bytes32 _s,
     uint256 _value,
-    uint256 _nonce
+    uint256 _nonce,
+    address _originator
   ) public view returns(bool) {
     // there is a prefix to signed messages
     bytes memory prefix = "\x19Ethereum Signed Message:\n32";
@@ -117,7 +124,7 @@ contract SinglePaymentChannel {
     // ecrecover the address of the signer
     address signer = ecrecover(prefixedHash,_v,_r,_s);
     // We require the originator of the message to be the signer
-    require(signer == alice, "signer is not the originator");
+    require(signer == _originator, "signer is not the originator");
     //  we decide that a valid hash is the address of this contract, with the value and the nonce
     bytes32 h = keccak256(abi.encodePacked(address(this), _value, _nonce));
     // Ensure the proof matches
