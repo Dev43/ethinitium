@@ -139,7 +139,7 @@ contract('PaymentChannel', function(accounts) {
 
         // let's look at bob's balance before and after finalizing:
         let aliceBefore = web3.eth.getBalance(alice)
-        let timeout = await c.Timeout({from: alice})
+        let timeout = await c.TimeoutClose({from: alice})
         let aliceAfter = web3.eth.getBalance(alice)
         assert(timeout, "Did not timeout properly")
         assert(aliceAfter.minus(aliceBefore).gt(0), "Alice's balance got recovered minus the fees")

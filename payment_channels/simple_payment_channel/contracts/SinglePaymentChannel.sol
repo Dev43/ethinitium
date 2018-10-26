@@ -108,7 +108,7 @@ contract SinglePaymentChannel {
   // never sends back a signature acknowledging the value alice sent
   // Before the timeout occurs, bob could send the message he received from alice and his own signature
   // to close the channel
-  function Timeout() external returns(bool) {
+  function TimeoutClose() external returns(bool) {
     // Ensure we reached the timeout period
     require(now > startDate + timeout  , "timeout on the channel has not been reached");
     // Ensure the channel is not in the closed / challenge period
