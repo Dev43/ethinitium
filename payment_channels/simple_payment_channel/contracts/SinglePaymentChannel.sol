@@ -9,6 +9,7 @@ contract SinglePaymentChannel {
   uint256 public startChallengePeriod;
   uint256 public challengePeriodLength = 15 minutes;
   uint256 public amountDeposited;
+  uint256 public timeout = 1 days;
 
   struct Payment {
     uint256 nonce;
@@ -42,22 +43,19 @@ contract SinglePaymentChannel {
   }
 
 
-  // Anyone can close this channel
+  // Anyone can close this channel but needs to give in both proofs
   function CloseChannel(
     bytes32 _proof,
-    uint8 _v,
-    bytes32 _r,
-    bytes32 _s,
+    uint8[2] _v,
+    bytes32[2] _r,
+    bytes32 [2]_s,
     uint256 _value,
     uint256 _nonce
   ) external returns(bool) {
     // Ensure one can only close the channel once
     require(startChallengePeriod == 0, "cannot close the channel multiple times");
-    if(msg.sender == alice) {
-      require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, bob), "alice's proof is not valid");
-    } else {
-      require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, alice), "bob's proof is not valid");
-    }
+    require(VerifyValidityOfMessage(_proof, _v[0], _r[0], _s[0], _value, _nonce, alice), "alice's proof is not valid");
+    require(VerifyValidityOfMessage(_proof, _v[1], _r[1], _s[1], _value, _nonce, bob), "bob's proof is not valid");
     // Update the last payment information
     lastPaymentProof = Payment({nonce: _nonce, value: _value});
     // Start the challenge period
@@ -65,7 +63,7 @@ contract SinglePaymentChannel {
     return true;
   }
 
-  // For a successful challenge, we need a signed message with a higher nonce than the last one
+  // For a successful challenge, we need a signed message from the **other** party with a higher nonce than the last one
   // Anyone can challenge (not only bob or alice)
   function Challenge(    
     bytes32 _proof,
@@ -81,10 +79,10 @@ contract SinglePaymentChannel {
       require(startChallengePeriod + challengePeriodLength > now, "challenge period has not ended");
       // If the sender is alice, then she has to show a message from bob with a valid nonce
       if(msg.sender == alice) {
-        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, bob), "alice's proof is not valid");
+        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, bob), "proof that bob signed this message is not valid");
       } else {
         // Else bob has to show a valid message from Alice with a valid nonce
-        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, alice), "bob's proof is not valid");
+        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, alice), "proof that alice signed this message is not valid");
       }
       // Ensure the message from alice is valid
       // if the challenge is successful, update the lastPaymentProof
@@ -103,6 +101,20 @@ contract SinglePaymentChannel {
     bob.transfer(lastPaymentProof.value);
     alice.transfer(amountDeposited - lastPaymentProof.value);
     
+    return true;
+  }
+
+  // Used in case no messages get transferred from Alice to Bob or if Bob
+  // never sends back a signature acknowledging the value alice sent
+  // Before the timeout occurs, bob could send the message he received from alice and his own signature
+  // to close the channel
+  function Timeout() external returns(bool) {
+    // Ensure we reached the timeout period
+    require(now > startDate + timeout  , "timeout on the channel has not been reached");
+    // Ensure the channel is not in the closed / challenge period
+    require(startChallengePeriod == 0, "the channel is in the closed state");
+    // Finally transfer all of the funds to alice as there were presumably no message transferred from Bob to Alice
+    alice.transfer(amountDeposited);
     return true;
   }
 
