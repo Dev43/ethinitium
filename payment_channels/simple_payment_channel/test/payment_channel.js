@@ -17,18 +17,20 @@ async function timeJump(timeToInc) {
   });
 }
 
-  // Send in the address we want to use, the contract address we are invoking, the value and nonce
-  // as hex strings only using web3.toHex()
+
   function createSig(account, contractAddress, value, nonce) {
-    // Change the value to hex. here it is a big number
+    // Proof is the contract address, the value (padded to uin256) and the nonce(padded to uint256)
+    // The .slice(2) remove the "0x" at the beginning of all the strings
     let proof = web3.sha3(contractAddress.slice(2) + value.slice(2).padStart(64, '0') + nonce.slice(2).padStart(64, '0'), { encoding: 'hex' }); 
-    // We want to remove the 0x at the beginning   
+    // Here we sign the proof with the associated account
     let sig = web3.eth.sign(account, proof).slice(2);  
+    // Extract the information from the signature
     let signature = {      
         r: '0x' + sig.slice(0,64),      
         s: '0x' + sig.slice(64,128),    
         v: web3.toDecimal(sig.slice(128,130)) + 27
-    };    
+    };
+    // We return the signature object and the proof    
     return {
         signature,
         proof
