@@ -74,7 +74,7 @@ We will be creating a simple payment channel smart contract that will achieve th
 
 In our example, Alice deploys our smart contract. She calls the `OpenChannel` function where she declares the other party as Bob and she deposits a total maximal sum that the contract holds. For simplicity, we won't allow Alice or Bob to add more funds into the contract after the channel is open.
 
-```javascript
+```js
   // Sends a proof (bytes32 hash) and a nonce with the value that it needs to be
   function OpenChannel(address _bob) external payable {
     // Ensure we are sending at least some ether
@@ -112,7 +112,7 @@ Now to create a digital signature using these three values and either Alice's or
 
 In the [tests](https://github.com/Dev43/ethinitium/blob/master/payment_channels/simple_payment_channel/test/payment_channel.js) associated with our contract, we've created a function to do just that.
 
-```javascript
+```js
   function createSig(account, contractAddress, value, nonce) {
     // Proof is the contract address, the value (padded to uin256) and the nonce(padded to uint256)
     // The .slice(2) remove the "0x" at the beginning of all the strings
@@ -139,7 +139,7 @@ Alice now signs such a message with her private key and sends it to Bob. She nee
 
 At anytime now, either of them are able to close the channel. All that either party needs to do is to call the `Close` function on the smart contract with both valid signatures and the respective values (nonce and value). From there, the smart contract will verify both signatures, update the latest proof sent to it and start the challenge period.
 
-```javascript
+```js
   // Anyone can close this channel but needs to give in both signatures of the proof
   function CloseChannel(
     bytes32 _proof,
@@ -166,40 +166,40 @@ We've set a 15 minute "challenge period" where the opponent (or actually anyone)
 
 Also, we cannot let only one of the parties be able to sign the message as it would mean that party can create as many messages with higher nonces as they want. To successfully challenge the closing of a channel, we've made it so one needs to provide the other party's signature with a higher nonce for it to be valid.
 
- ```javascript
-   // For a successful challenge, we need a signed message from the **other** party with a higher nonce than the last one
-  // Anyone can challenge (not only bob or alice)
-  function Challenge(
-    bytes32 _proof,
-    uint8 _v,
-    bytes32 _r,
-    bytes32 _s,
-    uint256 _value,
-    uint256 _nonce
-    ) external  returns(bool) {
-      // Ensure we are in the challenge period
-      require(startChallengePeriod > 0, "channel is not in closed state");
-      // Ensure we are in the challenge period
-      require(startChallengePeriod + challengePeriodLength > now, "challenge period has not ended");
-      // If the sender is alice, then she has to show a message from bob with a valid nonce
-      if(msg.sender == alice) {
-        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, bob), "proof that bob signed this message is not valid");
-      } else {
-        // Else bob has to show a valid message from Alice with a valid nonce
-        require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, alice), "proof that alice signed this message is not valid");
-      }
-      // if the challenge is successful, update the lastPaymentProof
-      lastPaymentProof = Payment({nonce: _nonce, value: _value});
-      return true;
-  }
+```js
+  // For a successful challenge, we need a signed message from the **other** party with a higher nonce than the last one
+// Anyone can challenge (not only bob or alice)
+function Challenge(
+  bytes32 _proof,
+  uint8 _v,
+  bytes32 _r,
+  bytes32 _s,
+  uint256 _value,
+  uint256 _nonce
+  ) external  returns(bool) {
+    // Ensure we are in the challenge period
+    require(startChallengePeriod > 0, "channel is not in closed state");
+    // Ensure we are in the challenge period
+    require(startChallengePeriod + challengePeriodLength > now, "challenge period has not ended");
+    // If the sender is alice, then she has to show a message from bob with a valid nonce
+    if(msg.sender == alice) {
+      require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, bob), "proof that bob signed this message is not valid");
+    } else {
+      // Else bob has to show a valid message from Alice with a valid nonce
+      require(VerifyValidityOfMessage(_proof, _v, _r, _s, _value, _nonce, alice), "proof that alice signed this message is not valid");
+    }
+    // if the challenge is successful, update the lastPaymentProof
+    lastPaymentProof = Payment({nonce: _nonce, value: _value});
+    return true;
+}
 
- ```
+```
 
 After a successful challenge, the latest proof will be overwritten with the one sent. This ensures that Bob (or Alice) agree on the final outcome of the channel.
 
 After the challenge period is done, either party call the `FinalizeChannel` function and get paid.
 
- ```javascript
+```js
    // Used to finalize payment of the channel
   function FinalizeChannel() external returns(bool) {
     // Ensure the challenge period exists
@@ -211,12 +211,11 @@ After the challenge period is done, either party call the `FinalizeChannel` func
     alice.transfer(amountDeposited - lastPaymentProof.value);
     return true;
   }
-
- ```
+```
 
  Finally we have to cover one last edge case, the fact that Bob could be unresponsive or decide to never sign a single message from Alice. Thus we need a timeout mechanism so Alice can recover her funds if the channel never gets closed.
 
- ```javascript
+```js
    function TimeoutClose() external returns(bool) {
     // Ensure we reached the timeout period
     require(now > startDate + timeout  , "timeout on the channel has not been reached");
@@ -226,6 +225,7 @@ After the challenge period is done, either party call the `FinalizeChannel` func
     alice.transfer(amountDeposited);
     return true;
   }
+
 ```
 
 ### CLI tool
@@ -238,7 +238,7 @@ To get started using this CLI tool, you will need [ganache](https://truffleframe
 
 By default, the `payment-channel` tool will be looking for Ganache on port 7545, so when starting up ganache, ensure to tell it what port to use:
 
-```bash
+```sh
 ganache-cli --port 7545
 ```
 
@@ -254,7 +254,7 @@ This small CLI tool simulates a payment channel between Alice and Bob.
 
 First we need initialize our storage, run:
 
-```bash
+```sh
 ./payment-channel init [mnemonic]
 ```
 
@@ -264,13 +264,13 @@ This will initialize our storage, and derive the public/private keys from the mn
 
 Now we need to deploy the contract to the ganache testnet network.
 
-```bash
+```sh
 ./payment-channel deploy
 ```
 
 With the contract deployed, we can go ahead and open a payment channel between Alice and Bob.
 
-```bash
+```sh
 ./payment-channel channel open 1000000000000000000
 ```
 
@@ -278,13 +278,13 @@ Here we just opened a channel with a value of 1 ether (1*10<sup>18</sup>) sent b
 
 Now we can exchange as many signed messages between Bob and Alice. We need to give it the value we want to exchange, and the nonce of the transaction
 
-```bash
+```sh
 ./payment-channel channel sign 100000000000000000 --nonce 1
 ```
 
 For simplicity, this command creates a signature from both parties (Alice and Bob) automatically. We can see the latest signatures from both parties outputted to STDOUT.
 
-```golang
+```go
 Latest proof: channel.PaymentProof{
   Signatures: []channel.Signature{
     channel.Signature{
@@ -307,13 +307,13 @@ One can create as many signatures as they want with an ever increasing nonce. Th
 
 Now let's create a message where Bob receives more ether
 
-```bash
+```sh
 ./payment-channel channel sign 150000000000000000 --nonce 2
 ```
 
 Now for the interesting bits. We can decide to close the payment channel with an earlier signature that benefits us. Let's close our payment channel with the first signature that we have where Bob is getting 0.1 ether and alice keeps 0.9 of it all.
 
-```bash
+```sh
 ./payment-channel channel close 0
 ```
 
@@ -321,7 +321,7 @@ Here we close the payment channel with the first signature we created, with nonc
 
 Now Bob notices that Alice is trying to cheat her, Bob will challenge Alice and send the latest transaction he received from her. Keep in mind, this message has a higher nonce.
 
-```bash
+```sh
 ./payment-channel channel challenge alice
 ```
 
@@ -329,13 +329,13 @@ If the message is valid, it will overwrite Alice's assertion that she was suppos
 
 Now we need to finalize the payment channel but we are still in the challenge period. To do so we will do a little bit of magic. We will artificially increase the blockchain time (we can do this on testrpc and ganache) by calling our special `timewarp` command.
 
-```bash
+```sh
 ./payment-channel timewarp 1000
 ```
 
 Because our challenge period is only 15 minutes, increasing the time by 1000 seconds is plenty. We can now call our finalize command:
 
-```bash
+```sh
 ./payment-channel channel finalize
 ```
 
