@@ -75,7 +75,6 @@ We will be creating a simple payment channel smart contract that will achieve th
 In our example, Alice deploys our smart contract. She calls the `OpenChannel` function where she declares the other party as Bob and she deposits a total maximal sum that the contract holds. For simplicity, we won't allow Alice or Bob to add more funds into the contract after the channel is open.
 
 ```js
-  // Sends a proof (bytes32 hash) and a nonce with the value that it needs to be
   function OpenChannel(address _bob) external payable {
     // Ensure we are sending at least some ether
     require(msg.value > 0, "you must send ether to open a channel");
