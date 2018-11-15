@@ -82,4 +82,8 @@ contract Heap {
         return heap;
     }
 
+    function getMax() public view returns(uint256) {
+        return heap[1];
+    }
+
 }
