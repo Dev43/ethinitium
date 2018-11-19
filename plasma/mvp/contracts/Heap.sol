@@ -6,17 +6,27 @@ contract Heap {
 
     using SafeMath for uint256;
 
+    address public owner;
+
     // The main operations of a priority queue are insert, delMax, & isEmpty.
     constructor() public {
         // Start at 0
         heap = [0];
+        owner = msg.sender;
+    }
+
+
+    // Ensure only the owner of the contract can do certain actions
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
     }
 
     // We will be storing our heap in an array
     uint256[] public heap;
 
     // Inserts adds in a value to our heap.
-    function insert(uint256 _value) public {
+    function insert(uint256 _value) public onlyOwner {
         // Add the value to the end of our array
         heap.push(_value);
         // Start at the end of the array
@@ -33,7 +43,7 @@ contract Heap {
     }
 
     // RemoveMax pops off the root element of the heap (the highest value here) and rebalances the heap
-    function removeMax() public returns(uint256){
+    function removeMax() public onlyOwner returns(uint256) {
         // Ensure the heap exists
         require(heap.length > 1);
         // take the root value of the heap

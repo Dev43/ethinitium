@@ -1,4 +1,6 @@
 const Heap = artifacts.require("./Heap.sol")
+const fs = require("fs")
+
 contract('Heap', function(accounts) {
 
   it("should create a valid heap by calling insert", async() => {
@@ -33,12 +35,17 @@ contract('Heap', function(accounts) {
 
     })
 
-    it("Adds 100 elements in the heap ", async() => {
+    it("Adds 100 elements in the heap, worst case for insert ", async() => {
       let heap = await Heap.new();
+      // Worse for insert
       for(let i = 0; i < 100; i++) {
-        num = Math.floor(Math.random()*1000000)
-        await heap.insert(num);
+        num = i
+        last = await heap.insert(num);
       }
+
+      console.log("/////////////////////// Worst case for insert")
+
+      console.log(last.receipt.gasUsed)
       
       max = await heap.removeMax()
       console.log(max.receipt.gasUsed)
@@ -48,7 +55,60 @@ contract('Heap', function(accounts) {
       console.log(max.receipt.gasUsed)
       ins = await heap.insert(1)
       console.log(ins.receipt.gasUsed)
+    })
+
+    it("Adds 100 elements in the heap, worst case for removeMax ", async() => {
+      // Worst for removeMax
+      let heap = await Heap.new();
+
+      // Worst for removeMax
+      for(let i = 100; i > 0; i--) {
+        num = i
+        last = await heap.insert(num);
+      }
+      console.log("/////////////////////// Worst case for remove max")
       
+      max = await heap.removeMax()
+      console.log(max.receipt.gasUsed)
+      ins = await heap.insert(100000000)
+      console.log(ins.receipt.gasUsed)
+      max = await heap.removeMax()
+      console.log(max.receipt.gasUsed)
+      ins = await heap.insert(1)
+      console.log(ins.receipt.gasUsed)
+    })
+
+    it("Adds elements in the heap and spits out a csv ", async() => {
+      // Worst for removeMax
+      let newFileA = fs.openSync("gasUsageAsc.csv", "a")
+      let newFileD = fs.openSync("gasUsageDesc.csv", "a")
+      let newFileR = fs.openSync("gasUsageRand.csv", "a")
+
+
+      var interationFuncOrderedAsc = function(i){
+        init = i
+        return function() {
+          return init++;
+        }
+      }
+
+      var interationFuncOrderedDesc = function(i){
+        init = i
+        return function() {
+          return init--;
+        }
+      }
+
+      var interationFuncRandom = function(i){
+        init = i
+        return function() {
+          return Math.floor(Math.random() * i);
+        }
+      }
+      
+      await createGasProfile(newFileA,  1000, interationFuncOrderedAsc(1), "ordered ascending")
+      await createGasProfile(newFileD,  1000, interationFuncOrderedDesc(1000), "ordered descending")
+      await createGasProfile(newFileR,  1000, interationFuncRandom(10000), "random")
     })
 });
 
@@ -71,4 +131,29 @@ function assertEqual(answer, finalHeap) {
   for(let i = 0; i < finalHeap.length; i++) {
     assert.equal(finalHeap[i].toString(), ""+answer[i], "heap elements are not equal " + answer[i] + " " + finalHeap[i] + " " + i)
   }
+}
+
+
+async function createGasProfile(file, iterations, toInsertFunc, comment) {
+  let gas = 0
+  let i = iterations
+  let j = iterations
+  csv = "inserts,gasUsed,comment\n"
+  fs.appendFileSync(file, csv)
+  let heap = await Heap.new();
+
+  while(i > 0) {
+      gas = (await heap.insert(toInsertFunc())).receipt.gasUsed
+      let csv = iterations+","+gas+","+comment+",inserting"+"\n";
+      fs.appendFileSync(file, csv)
+      i--
+  }
+
+  while(j > 0) {
+    gas = (await heap.removeMax()).receipt.gasUsed
+    let csv = iterations+","+gas+","+comment+",removeMax"+"\n";
+    fs.appendFileSync(file, csv)
+    j--;
+  }
+
 }

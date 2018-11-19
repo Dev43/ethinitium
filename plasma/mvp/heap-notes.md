@@ -167,12 +167,7 @@ Let's see how many operations it would take to reach the current block gas limit
 
 ### Heap properties
 
-A heap is a very useful structure. Thanks to how it is built, we can derive a relationship between two of the most important properties of a tree, it's height and the number of nodes. For a heap of N nodes, its height is `log_2(N)`. Conversely, to calculate the approximate amount of nodes in a tree of height `h`, we do `2^h`. Actually the max number of nodes in a tree of height h is `2^(h+1) -1` and minimum is `2^h` so we have a nice upper and lower bound for our total amount of nodes N:
-
-```
-2^h <= N <= 2^(h+1) - 1
-```
-
+A heap is a very useful structure. Thanks to how it is built, we can derive a relationship between two of the most important properties of a tree, it's height and the number of nodes. For a heap of N nodes, its height is `log_2(N)`. Conversely, to calculate the approximate amount of nodes in a tree of height `h`, we do `2^h`. Actually the max number of nodes in a tree of height h is `2^(h+1) -1` and minimum is `2^h` so we have a nice upper and lower bound for our total amount of nodes N: `2^h <= N <= 2^(h+1) - 1`.
 
 When doing an `insert`, at every step of the while loop, we need to compare the value with its parents. That means we need to do at most `log2(N) - 1` comparisons for it to bubble all the way to the top.
 
@@ -197,7 +192,7 @@ The cost of adding only 1 element to an empty tree is `47434`, this will be our 
 
 h = (8000000 - 47434) / 12694
 
-h = 626.48
+h ~= 626.48
 
 ```
 
@@ -211,7 +206,7 @@ It is very much the same with remove max, albeit it does need more comparisons t
 
 h = (8000000 - 47434) / 18000
 
-h = 441
+h ~= 441.81
 
 ```
 
@@ -220,4 +215,3 @@ Again, `2^441` is an extremely large number, it would not be feasible for our sm
 ## Conclusion
 
 We've now successfully created our heap data structure that we will be using as our priority queue for our **Plasma MVP** implementation. We've showed that this data structure let's us do inserts and remove the maximum of the set in a very efficient way and we've showed that we don't need to be worried about our `while` loop in our solidity code, this calculation will never reach the block gas limit and brick our contract. Now we can continue on our quest for the plasma MVP!
-
