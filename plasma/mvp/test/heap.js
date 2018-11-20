@@ -35,81 +35,81 @@ contract('Heap', function(accounts) {
 
     })
 
-    it("Adds 100 elements in the heap, worst case for insert ", async() => {
-      let heap = await Heap.new();
-      // Worse for insert
-      for(let i = 0; i < 100; i++) {
-        num = i
-        last = await heap.insert(num);
-      }
+//     it("Adds 100 elements in the heap, worst case for insert ", async() => {
+//       let heap = await Heap.new();
+//       // Worse for insert
+//       for(let i = 0; i < 100; i++) {
+//         num = i
+//         last = await heap.insert(num);
+//       }
 
-      console.log("/////////////////////// Worst case for insert")
+//       console.log("/////////////////////// Worst case for insert")
 
-      console.log(last.receipt.gasUsed)
+//       console.log(last.receipt.gasUsed)
       
-      max = await heap.removeMax()
-      console.log(max.receipt.gasUsed)
-      ins = await heap.insert(100000000)
-      console.log(ins.receipt.gasUsed)
-      max = await heap.removeMax()
-      console.log(max.receipt.gasUsed)
-      ins = await heap.insert(1)
-      console.log(ins.receipt.gasUsed)
-    })
+//       max = await heap.removeMax()
+//       console.log(max.receipt.gasUsed)
+//       ins = await heap.insert(100000000)
+//       console.log(ins.receipt.gasUsed)
+//       max = await heap.removeMax()
+//       console.log(max.receipt.gasUsed)
+//       ins = await heap.insert(1)
+//       console.log(ins.receipt.gasUsed)
+//     })
 
-    it("Adds 100 elements in the heap, worst case for removeMax ", async() => {
-      // Worst for removeMax
-      let heap = await Heap.new();
+//     it("Adds 100 elements in the heap, worst case for removeMax ", async() => {
+//       // Worst for removeMax
+//       let heap = await Heap.new();
 
-      // Worst for removeMax
-      for(let i = 100; i > 0; i--) {
-        num = i
-        last = await heap.insert(num);
-      }
-      console.log("/////////////////////// Worst case for remove max")
+//       // Worst for removeMax
+//       for(let i = 100; i > 0; i--) {
+//         num = i
+//         last = await heap.insert(num);
+//       }
+//       console.log("/////////////////////// Worst case for remove max")
       
-      max = await heap.removeMax()
-      console.log(max.receipt.gasUsed)
-      ins = await heap.insert(100000000)
-      console.log(ins.receipt.gasUsed)
-      max = await heap.removeMax()
-      console.log(max.receipt.gasUsed)
-      ins = await heap.insert(1)
-      console.log(ins.receipt.gasUsed)
-    })
+//       max = await heap.removeMax()
+//       console.log(max.receipt.gasUsed)
+//       ins = await heap.insert(100000000)
+//       console.log(ins.receipt.gasUsed)
+//       max = await heap.removeMax()
+//       console.log(max.receipt.gasUsed)
+//       ins = await heap.insert(1)
+//       console.log(ins.receipt.gasUsed)
+//     })
 
-    it("Adds elements in the heap and spits out a csv ", async() => {
-      // Worst for removeMax
-      let newFileA = fs.openSync("gasUsageAsc.csv", "a")
-      let newFileD = fs.openSync("gasUsageDesc.csv", "a")
-      let newFileR = fs.openSync("gasUsageRand.csv", "a")
+//     it("Adds elements in the heap and spits out a csv ", async() => {
+//       // Worst for removeMax
+//       let newFileA = fs.openSync("gasUsageAsc.csv", "a")
+//       let newFileD = fs.openSync("gasUsageDesc.csv", "a")
+//       let newFileR = fs.openSync("gasUsageRand.csv", "a")
 
 
-      var interationFuncOrderedAsc = function(i){
-        init = i
-        return function() {
-          return init++;
-        }
-      }
+//       var interationFuncOrderedAsc = function(i){
+//         init = i
+//         return function() {
+//           return init++;
+//         }
+//       }
 
-      var interationFuncOrderedDesc = function(i){
-        init = i
-        return function() {
-          return init--;
-        }
-      }
+//       var interationFuncOrderedDesc = function(i){
+//         init = i
+//         return function() {
+//           return init--;
+//         }
+//       }
 
-      var interationFuncRandom = function(i){
-        init = i
-        return function() {
-          return Math.floor(Math.random() * i);
-        }
-      }
+//       var interationFuncRandom = function(i){
+//         init = i
+//         return function() {
+//           return Math.floor(Math.random() * i);
+//         }
+//       }
       
-      await createGasProfile(newFileA,  1000, interationFuncOrderedAsc(1), "ordered ascending")
-      await createGasProfile(newFileD,  1000, interationFuncOrderedDesc(1000), "ordered descending")
-      await createGasProfile(newFileR,  1000, interationFuncRandom(10000), "random")
-    })
+//       await createGasProfile(newFileA,  1000, interationFuncOrderedAsc(1), "ordered ascending")
+//       await createGasProfile(newFileD,  1000, interationFuncOrderedDesc(1000), "ordered descending")
+//       await createGasProfile(newFileR,  1000, interationFuncRandom(10000), "random")
+//     })
 });
 
 
