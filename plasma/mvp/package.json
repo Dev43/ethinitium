@@ -15,6 +15,7 @@
   "dependencies": {
     "openzeppelin-solidity": "^2.0.0",
     "rlp": "^2.1.0",
+    "solidity-bytes-utils": "0.0.5",
     "solidity-rlp": "^1.1.0"
   }
 }
