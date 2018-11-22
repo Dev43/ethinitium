@@ -23,6 +23,7 @@ contract PlasmaMVP {
     _;
   }
 
+  uint256 public lastWeekOldBlock;
 
 // // Exittransactions storing (i) the submitter address, and (ii) the UTXO position (Plasma block number, txindex, outindex).
   struct ExitTransaction {
@@ -30,10 +31,12 @@ contract PlasmaMVP {
     uint256 plasmaBlockNumber;
     uint256 txIndex;
     uint256 outIndex;
+    // added for simplicity
+    uint256 amount;
+    // added for challenges
+    bool challenged;
   }
 
-  //  Best guess of the last week old block
-  uint256 public lastWeekOldBlock;
 
   //  "list" of Plasma blocks,
   PlasmaBlock[] public plasmaBlocks;
@@ -83,7 +86,6 @@ contract PlasmaMVP {
       timestamp: now
     }));
 
-    updateWeekOldBlock();
 
     emit NewBlock(plasmaBlocks.length, root);
   }
@@ -102,7 +104,6 @@ contract PlasmaMVP {
       }));
 
 
-      updateWeekOldBlock();
 
       emit Deposit(msg.sender, plasmaBlocks.length, msg.value);
   }
@@ -131,15 +132,15 @@ contract PlasmaMVP {
     
     require(exits[plasmaBlockNum].plasmaBlockNumber != 0, "exit already exists");
 
-    bytes32 merkleRoot = plasmaBlocks[plasmaBlockNum].blockHash;
+    bytes32 blockHash = plasmaBlocks[plasmaBlockNum].blockHash;
 
     // ensure exit does not exist already
 
     // need to seperate the important information in a transaction thsat is RLP encoded
     // A transaction is of the form:
-      /* [blknum1, txindex1, oindex1, sig1, # Input 1 --> CAN HAVE MULTIPLE INPUTS (NOT FOR MVP)
+      /* [blknum1, txindex1, oindex1, sig1, # Input 1 
           blknum2, txindex2, oindex2, sig2, # Input 2
-          newowner1, denom1,                # Output 1 --> the "to" --> CAN HAVE MULTIPLE OUTPUTS
+          newowner1, denom1,                # Output 1 
           newowner2, denom2,                # Output 2
           fee] */
     RLPReader.RLPItem[] memory decodedTx = fullTx.toRlpItem().toList();
@@ -150,7 +151,9 @@ contract PlasmaMVP {
       submitter: decodedTx[8 + 2 * oindex].toAddress(),
       plasmaBlockNumber: plasmaBlockNum,
       txIndex: txindex,
-      outIndex: oindex
+      outIndex: oindex,
+      amount : decodedTx[9 + 2 * oindex].toUint(),
+      challenged: false
       // amount?
     });
 
@@ -167,10 +170,10 @@ contract PlasmaMVP {
     // Proof is the fulle merkle proof (merged together) we need to valiate that the root of the merkle tree is the root of the deposit block
     bytes32 txHash = keccak256(fullTx);
     // We verify the txn hash at the bottom of the tree, hash it with it's sibling and go up the tree to verify the merkleRoot.
-    require(Merkle.verify(txHash, txindex, merkleRoot, proof), "merkle proof not verified");
+    require(Merkle.verify(txHash, txindex, blockHash, proof), "merkle proof not verified");
     // Need to validate signature
     // We need to validate a whole bunch of signatures, the first one is the one for this transaction (SIG1), the second one is the confirm signature (CONFSIG) which is the hash of the txHash and rootHash
-    require(validateSigs(txHash, keccak256(abi.encodePacked(txHash, merkleRoot)), confirmSig, isMultipleUTXO));
+    require(validateSigs(txHash, keccak256(abi.encodePacked(txHash, blockHash)), confirmSig, isMultipleUTXO));
 
     // 
     // Need to add exits in a priority queue structure
@@ -178,6 +181,7 @@ contract PlasmaMVP {
     //(alternatively, blknum * 1000000000 + txindex * 10000 + oindex). However, if when calling exit, the block that the UTXO was created in is more than 7 days old, 
     //then the blknum of the oldest Plasma block that is less than 7 days old is used instead. There is a passive loop that finalizes exits that are more than 14 days old,
     // always processing exits in order of priority (earlier to later).
+
     uint256 priority;
     if (plasmaBlocks[plasmaBlockNum].timestamp - now > 7 days) {
       updateWeekOldBlock();
@@ -188,6 +192,7 @@ contract PlasmaMVP {
       priority = plasmaBlockNum * 1000000000 + txindex * 10000 + oindex;
     }
 
+    // TODO CHECK THIS AGAIN -- all we need is a way for it tpo be popped first
     // Encode the blocknumber inside the main data structure :)
     // Cool trick taken form OMISEGO
     heap.insert(priority);
@@ -196,8 +201,6 @@ contract PlasmaMVP {
 
     emit ExitInProgress(msg.sender, priority, exitAmount);
   }
-
-
 
   // function to update the last week old block
   function updateWeekOldBlock() internal returns(uint256) {
@@ -235,15 +238,76 @@ contract PlasmaMVP {
     return true;
   }
 
+  // There is a passive loop that finalizes exits that are more than 14 days old, always processing exits in order of priority (earlier to later).
+  function finalizeExit() public {
 
-  // function finalizeExit() {
+    // Get the next element to exit
 
-  // }
+    uint256 priority = heap.getMax();
+    // get the exit in question
+  
+    ExitTransaction memory currExit = exits[priority];
+
+    // If the exit of the blocknumber is more than 14 days old, then exit it now
+
+    while(plasmaBlocks[currExit.plasmaBlockNumber].timestamp + 14 days < now){
+      // remove it from the heap
+      // REFACTOR THIS
+      uint newPriority = heap.removeMax();
+      
+      if(currExit.challenged == true) {
+        // delete the exit
+        delete exits[newPriority];
+        continue;
+      }
+      
+      // Get the amount to send
+      uint256 amount = currExit.amount;
+      // Get the submitter to send to
+      address toSendTo = currExit.submitter;
+      // delete the exit (so no reentrancry possible)
+      delete exits[newPriority];
+      // Transfer the funds
+
+      toSendTo.transfer(amount);
+      // Find the next exit
+      currExit = exits[heap.getMax()];
+
+    }
 
 
-  // // challengeExit(uint256 exitId, uint256 plasmaBlockNum, uint256 txindex, uint256 oindex, bytes tx, bytes proof, bytes confirmSig): 
-  // //challenges an exit attempt in process, by providing a proof that the TXO was spent, the spend was included in a block, and the owner made a confirm signature.
-  // function challengeExit(uint256 exitId, uint256 plasmaBlockNum, uint256 txindex, uint256 oindex, bytes fullTx, bytes proof, bytes confirmSig) external {
 
-  // }
+  }
+
+
+  // challengeExit(uint256 exitId, uint256 plasmaBlockNum, uint256 txindex, uint256 oindex, bytes tx, bytes proof, bytes confirmSig): 
+  //challenges an exit attempt in process, by providing a proof that the TXO was spent, the spend was included in a block, and the owner made a confirm signature.
+  // We don't need the oIndex as all we need to see is that the transaciton has been spent, not where trhe output is.
+  function challengeExit(uint256 exitId, uint256 plasmaBlockNum, uint256 txindex, uint256 oindex, bytes fullTx, bytes proof, bytes confirmSig) external {
+    // Get the exit with the specific id 
+    ExitTransaction storage challengedExit = exits[exitId];
+
+    // Get the plasma block where the UTXO was Spent
+    bytes32 challengeBlockHash = plasmaBlocks[plasmaBlockNum].blockHash;
+
+    
+    // Decode the transaction where this happened (do i need to do something with this??)
+    RLPReader.RLPItem[] memory decodedTx = fullTx.toRlpItem().toList();
+    // Check the transaction is actually submitted by the submitter --> or at least creates a new UTXO for the submitter.
+    require(decodedTx[8 + 2 * oindex].toAddress() == challengedExit.submitter);
+    // Get the transaction hash
+    bytes32 txHash = keccak256(fullTx);
+
+    // We need to validate that the confirm signatures match and are signed by the person trying to make the exit.
+    // abi.encodePacked(txHash, challengeBlockHash) is our proof that was signed in the confirmSig
+    require(challengedExit.submitter == ECDSA.recover(keccak256(abi.encodePacked(txHash, challengeBlockHash)), confirmSig), "challenge signature not coming from exit submitter");
+
+    // we need to confirm that the transaction was included in a block (means using proof and computing the merkle proof)
+    require(Merkle.verify(txHash, txindex, challengeBlockHash, proof), "challenge merkle proof not verified");
+
+    // Delete the exit
+    // CANNOT SIMPLY DELETE THE EXIT AS IT IS IN THE HEAP!!!! Look at a flag maybe, or deleting something else 
+    challengedExit.challenged = true;
+  // HERE WE CAN ADD A BOUNTY THAT GETS PAID OUT
+  }
 }
