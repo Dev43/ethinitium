@@ -70,9 +70,14 @@ contract PlasmaMVP {
     bytes32 indexed _blockHash
   );
 
+  // event Deposit(
+  //   address indexed from,
+  //   uint256 indexed blockNumber,
+  //   uint256 amount
+  // );
   event Deposit(
-    address indexed from,
-    uint256 indexed blockNumber,
+    address  from,
+    uint256  blockNumber,
     uint256 amount
   );
 

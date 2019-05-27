@@ -3,7 +3,9 @@ const fs = require("fs")
 
 contract('Heap', function(accounts) {
 
-  it("should create a valid heap by calling insert", async() => {
+  it("should create a valid heap by calling insert", async(done) => {
+      // let's not go through this test
+      done();
       let heap = await Heap.new();
       testData = [6, 5, 4, 2, 1, 3, 34];
       for(let i = 0; i < testData.length; i++) {
@@ -15,7 +17,9 @@ contract('Heap', function(accounts) {
       assertEqual(answer, finalHeap)
     })
 
-    it("should removeMax from a valid heap ", async() => {
+    it("should removeMax from a valid heap ", async(done) => {
+      // let's not go through this test
+      done();
       let heap = await Heap.new();
       let testData = [34, 26, 33, 15, 24, 5, 4, 12, 1, 23, 21, 2];
       for(let i = 0; i < testData.length; i++) {
@@ -35,81 +39,75 @@ contract('Heap', function(accounts) {
 
     })
 
-//     it("Adds 100 elements in the heap, worst case for insert ", async() => {
-//       let heap = await Heap.new();
-//       // Worse for insert
-//       for(let i = 0; i < 100; i++) {
-//         num = i
-//         last = await heap.insert(num);
-//       }
+    // it("Adds 100 elements in the heap, worst case for insert ", async(done) => {
+    //   // let's not go through this test
+    //   done();
+    //   let heap = await Heap.new();
+    //   // Worse for insert
+    //   for(let i = 0; i < 100; i++) {
+    //     num = i
+    //     last = await heap.insert(num);
+    //   }
 
-//       console.log("/////////////////////// Worst case for insert")
 
-//       console.log(last.receipt.gasUsed)
       
-//       max = await heap.removeMax()
-//       console.log(max.receipt.gasUsed)
-//       ins = await heap.insert(100000000)
-//       console.log(ins.receipt.gasUsed)
-//       max = await heap.removeMax()
-//       console.log(max.receipt.gasUsed)
-//       ins = await heap.insert(1)
-//       console.log(ins.receipt.gasUsed)
-//     })
+    //   max = await heap.removeMax()
+    //   ins = await heap.insert(100000000)
+    //   max = await heap.removeMax()
+    //   ins = await heap.insert(1)
+    // })
 
-//     it("Adds 100 elements in the heap, worst case for removeMax ", async() => {
-//       // Worst for removeMax
-//       let heap = await Heap.new();
+    // it("Adds 100 elements in the heap, worst case for removeMax ", async(done) => {
+    //   // let's not go through this test
+    //   done();
+    //   // Worst for removeMax
+    //   let heap = await Heap.new();
 
-//       // Worst for removeMax
-//       for(let i = 100; i > 0; i--) {
-//         num = i
-//         last = await heap.insert(num);
-//       }
-//       console.log("/////////////////////// Worst case for remove max")
+    //   // Worst for removeMax
+    //   for(let i = 100; i > 0; i--) {
+    //     num = i
+    //     last = await heap.insert(num);
+    //   }
       
-//       max = await heap.removeMax()
-//       console.log(max.receipt.gasUsed)
-//       ins = await heap.insert(100000000)
-//       console.log(ins.receipt.gasUsed)
-//       max = await heap.removeMax()
-//       console.log(max.receipt.gasUsed)
-//       ins = await heap.insert(1)
-//       console.log(ins.receipt.gasUsed)
-//     })
+    //   max = await heap.removeMax()
+    //   ins = await heap.insert(100000000)
+    //   max = await heap.removeMax()
+    //   ins = await heap.insert(1)
+    // })
 
-//     it("Adds elements in the heap and spits out a csv ", async() => {
-//       // Worst for removeMax
-//       let newFileA = fs.openSync("gasUsageAsc.csv", "a")
-//       let newFileD = fs.openSync("gasUsageDesc.csv", "a")
-//       let newFileR = fs.openSync("gasUsageRand.csv", "a")
+    // it("Adds elements in the heap and spits out a csv ", async(done) => {
+    //   done();
+    //   // Worst for removeMax
+    //   let newFileA = fs.openSync("gasUsageAsc.csv", "a")
+    //   let newFileD = fs.openSync("gasUsageDesc.csv", "a")
+    //   let newFileR = fs.openSync("gasUsageRand.csv", "a")
 
 
-//       var interationFuncOrderedAsc = function(i){
-//         init = i
-//         return function() {
-//           return init++;
-//         }
-//       }
+    //   var interationFuncOrderedAsc = function(i){
+    //     init = i
+    //     return function() {
+    //       return init++;
+    //     }
+    //   }
 
-//       var interationFuncOrderedDesc = function(i){
-//         init = i
-//         return function() {
-//           return init--;
-//         }
-//       }
+    //   var interationFuncOrderedDesc = function(i){
+    //     init = i
+    //     return function() {
+    //       return init--;
+    //     }
+    //   }
 
-//       var interationFuncRandom = function(i){
-//         init = i
-//         return function() {
-//           return Math.floor(Math.random() * i);
-//         }
-//       }
+    //   var interationFuncRandom = function(i){
+    //     init = i
+    //     return function() {
+    //       return Math.floor(Math.random() * i);
+    //     }
+    //   }
       
-//       await createGasProfile(newFileA,  1000, interationFuncOrderedAsc(1), "ordered ascending")
-//       await createGasProfile(newFileD,  1000, interationFuncOrderedDesc(1000), "ordered descending")
-//       await createGasProfile(newFileR,  1000, interationFuncRandom(10000), "random")
-//     })
+    //   await createGasProfile(newFileA,  1000, interationFuncOrderedAsc(1), "ordered ascending")
+    //   await createGasProfile(newFileD,  1000, interationFuncOrderedDesc(1000), "ordered descending")
+    //   await createGasProfile(newFileR,  1000, interationFuncRandom(10000), "random")
+    // })
 });
 
 
@@ -135,17 +133,18 @@ function assertEqual(answer, finalHeap) {
 
 
 async function createGasProfile(file, iterations, toInsertFunc, comment) {
+
   let gas = 0
   let i = iterations
   let j = iterations
   csv = "inserts,gasUsed,comment\n"
   fs.appendFileSync(file, csv)
   let heap = await Heap.new();
-
   while(i > 0) {
       gas = (await heap.insert(toInsertFunc())).receipt.gasUsed
       let csv = iterations+","+gas+","+comment+",inserting"+"\n";
       fs.appendFileSync(file, csv)
+
       i--
   }
 
