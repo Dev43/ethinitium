@@ -11,4 +11,3 @@ https://github.com/CoinCulture/evm-tools
 https://github.com/ethereumjs/merkle-patricia-tree
 
 https://github.com/ebuchman/understanding_ethereum_trie
-
