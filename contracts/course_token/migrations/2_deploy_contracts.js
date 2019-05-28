@@ -1,7 +1,7 @@
 
 
-const Ownable = artifacts.require("./Ownable.sol");
+const CourseToken = artifacts.require("./CourseToken.sol");
 
 module.exports = (deployer) => {
-  deployer.deploy(Ownable);
+  deployer.deploy(CourseToken);
 };

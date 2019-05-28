@@ -1,20 +1,20 @@
 
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.5.4;
 
-import "../../library/SafeMath.sol";
-import "../../library/Ownable.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
 
 contract CourseToken is Ownable {
 
     using SafeMath for uint256;
 
-    string public name = "Blockchain Summit";
+    string public name = "Blockchain Summit 6th and 7th of June 2019";
     string public symbol = "B@UBC";
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
 
-    mapping (address => mapping (address => uint256)) internal allowed;
+
     mapping(address => uint256) balances;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -23,12 +23,12 @@ contract CourseToken is Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) { return true; }
     function approve(address _spender, uint256 _value) public returns (bool) { return true; }
-    function allowance(address _owner, address _spender) public constant returns (uint256) { return 0; }
+    function allowance(address _owner, address _spender) public view returns (uint256) { return 0; }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
         require(_value <= balances[msg.sender]);
-        require(msg.sender == owner);
+        require(msg.sender == owner());
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -36,7 +36,7 @@ contract CourseToken is Ownable {
         return true;
     }
 
-    function transferMany(address[] _batchOfAddresses) external onlyOwner returns (bool) {
+    function transferMany(address[] calldata _batchOfAddresses) external onlyOwner returns (bool) {
         for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
             deliverTokens(_batchOfAddresses[i]);
         }
@@ -52,7 +52,7 @@ contract CourseToken is Ownable {
     }
 
 
-    function balanceOf(address _owner) public constant returns (uint256 balance) {
+    function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
     }
 
