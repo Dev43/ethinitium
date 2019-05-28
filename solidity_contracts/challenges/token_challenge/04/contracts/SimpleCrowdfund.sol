@@ -1,6 +1,6 @@
 
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.5.4;
 
 import "./SimpleToken.sol";
 
@@ -15,9 +15,13 @@ contract SimpleCrowdfund is SimpleToken {
     uint256 startBlock;
 
     // Constructor function
-    function SimpleCrowdfund() public {
-
+    constructor(uint256 _maxSupply, uint256 _toMint, address _ownerWallet) public {
+        maxSupply = _maxSupply;
+        ownerWallet = _ownerWallet;
+        require(mint(msg.sender, _toMint));
+        startBlock = block.number;
     }
+
 
     // Function that actually buys the tokens
     function buyTokens(address _to) public returns (bool) {}
@@ -26,7 +30,9 @@ contract SimpleCrowdfund is SimpleToken {
     function getRate() public view returns (uint256) {}
 
     // If user simply send ETH, call buy tokens with the message sender
-    function() public {}
+    function() external payable {
+        buyTokens(msg.sender);
+    }
 
 }
 

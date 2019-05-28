@@ -1,4 +1,4 @@
-# BikeShare Solidity challenge
+# SimpleToken Solidity challenge
 
 ## 03 Crowdfund initialization
 
@@ -14,7 +14,6 @@ Add the following functions to the crowdfund contact:
 - getRate, takes in no argument, is constant and returns a uint256
 - fallback function
 
-
 Add two variables:
 
 - ownerWallet, it is an address
@@ -23,3 +22,5 @@ Add two variables:
 Add one event:
 
 - TokenPurchase that takes in an address and a value. The address should be searchable.
+
+Don't forget to update your migration script

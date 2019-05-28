@@ -1,4 +1,4 @@
-# BikeShare Solidity challenge
+# SimpleToken Solidity challenge
 
 ## 04 Crowdfund constructor and fallback function
 

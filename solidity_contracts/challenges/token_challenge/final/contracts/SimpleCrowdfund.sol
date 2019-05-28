@@ -1,6 +1,6 @@
 
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.5.4;
 
 import "./SimpleToken.sol";
 
@@ -10,12 +10,12 @@ contract SimpleCrowdfund is SimpleToken {
     event TokenPurchase(address indexed _buyer, uint256 _value);
 
     // OwnerWallet address, all ETH gets transfered to him automatically
-    address ownerWallet;
+    address payable ownerWallet;
     // StartBlock is the block where the contract gets mined
     uint256 startBlock;
 
     // Constructor function
-    function SimpleCrowdfund(uint256 _maxSupply, uint256 _toMint, address _ownerWallet) public {
+    constructor(uint256 _maxSupply, uint256 _toMint, address payable _ownerWallet) public {
         maxSupply = _maxSupply;
         ownerWallet = _ownerWallet;
         require(mint(msg.sender, _toMint));
@@ -54,7 +54,7 @@ contract SimpleCrowdfund is SimpleToken {
     }
 
     // If user simply send ETH, call buy tokens with the message sender
-    function() public payable {
+    function() external payable {
         buyTokens(msg.sender);
     }
 

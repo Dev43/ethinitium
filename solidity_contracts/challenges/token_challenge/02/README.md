@@ -1,4 +1,4 @@
-# BikeShare Solidity challenge
+# SimpleToken Solidity challenge
 
 ## 02 Transfer and Minting
 

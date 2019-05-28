@@ -1,4 +1,4 @@
-# BikeShare Solidity challenge
+# SimpleToken Solidity challenge
 
 ## 05 BuyTokens and getRate
 
