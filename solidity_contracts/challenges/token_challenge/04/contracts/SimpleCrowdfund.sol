@@ -15,9 +15,9 @@ contract SimpleCrowdfund is SimpleToken {
     uint256 startBlock;
 
     // Constructor function
-    constructor(uint256 _maxSupply, uint256 _toMint, address _ownerWallet) public {
+    constructor(uint256 _maxSupply, uint256 _toMint) public {
         maxSupply = _maxSupply;
-        ownerWallet = _ownerWallet;
+        ownerWallet = msg.sender;
         require(mint(msg.sender, _toMint));
         startBlock = block.number;
     }
