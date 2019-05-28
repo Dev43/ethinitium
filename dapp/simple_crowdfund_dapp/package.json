@@ -1,0 +1,19 @@
+{
+  "name": "token_dapp",
+  "version": "1.0.0",
+  "description": "Example Token Dapp Using Web3.js",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "lite-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lite-server": "^2.5.3",
+    "truffle-contract": "^4.0.17"
+  }
+}
