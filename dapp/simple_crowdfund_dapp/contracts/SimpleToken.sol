@@ -12,7 +12,7 @@ contract SimpleToken is Ownable {
     /* ERC20 INTERFACE */
     string public name = "TOKEN NAME";
     string public symbol = "SYMBOL";
-    uint8 public decimals = 18;
+    uint8 public decimals = 0;
     uint256 public totalSupply = 0;
 
     mapping (address => mapping (address => uint256)) internal allowed;
