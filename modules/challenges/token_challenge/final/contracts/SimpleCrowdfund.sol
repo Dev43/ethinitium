@@ -24,8 +24,8 @@ contract SimpleCrowdfund is SimpleToken {
 
     // Function that actually buys the tokens
     function buyTokens(address _to) public payable returns (bool) {
-        // Crowdsfund ends if current block number is abve 2000
-        require(block.number > startBlock + 2000);
+        // Crowdsfund ends if current block number is above 2000
+        require(block.number < startBlock + 2000);
         // Ensure the address passed is valid
         require(address(_to) != address(0));
         // Get the amount of tokens
