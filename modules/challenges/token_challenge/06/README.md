@@ -1,21 +1,34 @@
 # SimpleToken Solidity challenge
 
-## 05 BuyTokens and getRate
+## 06 Testing
 
-In this exercise, we will implement the buyTokens and getRate function
+In this exercise, we will implement a few tests for our contract. Automated testing is *extremely important*.
 
-Change the getRate function so that it returns a different rate depending on the current block number:
+In the test directory, create a new file called `token.js`
 
-- Returns 8 if within blocks 0 and 500 form startBlock
-- Returns 7 if within blocks 500 and 750 form startBlock
-- Returns 6 if within blocks 750 and 1000 form startBlock
-- Returns 5 if over 1000
+Inside it, add the following code 
 
+```javascript
+const SimpleCrowdfundArtifact = artifacts.require("./SimpleCrowdfund");
 
+contract('SimpleCrowdfund', function (accounts) {
+  let simpleCrowdfund;
 
-Change the buyTokens function so that it:
+  it("should assert true", async () => {
+    simpleCrowdfund = await SimpleCrowdfundArtifact.deployed();
+    assert.isTrue(simpleCrowdfund.address !== "", "no address for the contract");
+  });
 
-- Adds tokens to the users balance. The calculation should be proporational to the amount of ether sent (ether sent * rate)
-- It transfers the ether directly to the ownerWallet
-- It emits a TokenPurchase event
-- It ensures that we are within 2000 blocks from the startBlock
+});
+```
+
+The simpleCrowdfund variable is an object representing our smart contract. It has all of the public/external functions of the smart contract as methods.
+
+So for example, to call our getRate function, all we need to do is call it from our object:
+
+`let rate = await simpleCrowdfund.getRate()`
+
+When calling such a function, a promise is returned. Be sure to use either the `.then()` or the `async/await` notation to get the result of the promise.
+
+Create 2 new tests, one to verify that the current rate of the contract is 8 and the other that buys tokens for `accounts[1]` from `accounts[0]` with a value of 10000 Wei
+
