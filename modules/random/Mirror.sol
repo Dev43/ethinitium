@@ -1,7 +1,7 @@
 pragma solidity 0.5.4;
 
 contract Mirror {
-    uint256 txCount = 0;
+    uint256 public txCount = 0;
     event Winner(address sender, uint256 amount);
     
     function () external payable {
