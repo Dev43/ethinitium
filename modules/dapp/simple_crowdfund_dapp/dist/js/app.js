@@ -5,7 +5,7 @@ App = {
     web3: {},
     SimpleCrowdfund: {},
     initialized: false,
-    currentNetwork: "4447", // 3 is ropsten
+    currentNetwork: "3", // 3 is ropsten CHANGE ME
 
     initialize: async function () {
         // first we check if web3 is present

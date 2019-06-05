@@ -44,14 +44,14 @@ contract SimpleToken is Ownable {
     /* END OF ERC20 INTERFACE */
 
     // Default max supply is 1000
-    uint256 maxSupply = 1000;
+    uint256 maxSupply = 100000000;
 
     // Minting function, adds tokens to our total supply
-    function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {
+    function mint(address _to, uint256 _amount) internal returns (bool) {
         // Add to the total supply
         totalSupply = totalSupply.add(_amount);
         // Ensure it is less than the max supply
-        require(totalSupply < maxSupply);
+        require(totalSupply <= maxSupply, "max supply reached");
         // Add to balance
         balances[_to] = balances[_to].add(_amount);
         // Emit events

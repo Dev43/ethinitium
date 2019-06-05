@@ -18,20 +18,20 @@ contract SimpleCrowdfund is SimpleToken {
     constructor(uint256 _maxSupply, uint256 _toMint) public {
         maxSupply = _maxSupply;
         ownerWallet = msg.sender;
-        require(mint(msg.sender, _toMint));
+        require(mint(msg.sender, _toMint), "minting failed");
         startBlock = block.number;
     }
 
     // Function that actually buys the tokens
     function buyTokens(address _to) public payable returns (bool) {
-        // Crowdsfund ends if current block number is abve 2000
-        require(block.number > startBlock + 2000);
+        // Crowdsfund ends if current block number is above 2000
+        require(block.number < startBlock + 21600 + 2000, "not in crowdfund period");
         // Ensure the address passed is valid
         require(address(_to) != address(0));
         // Get the amount of tokens
         uint256 amount = msg.value.mul(getRate());
         // Ensure the minting works
-        require(mint(_to, amount));
+        require(mint(_to, amount), "problem minting the token");
         // Transfer to the owner wallet the ETH sent
         ownerWallet.transfer(msg.value);
         // Emist an event
@@ -42,11 +42,11 @@ contract SimpleCrowdfund is SimpleToken {
     // GetRate returns the rate of the tokens based on the current block
     function getRate() public view returns (uint256) {
 
-        if (block.number > (startBlock + 1000)) {
+        if (block.number > (startBlock + 21600 + 1000)) {
             return 5;
-        } else if (block.number > (startBlock + 750)) {
+        } else if (block.number > (startBlock + 21600 + 750)) {
             return 6;
-        } else if (block.number > (startBlock + 500)) {
+        } else if (block.number > (startBlock + 21600 + 500)) {
             return 7;
         } else {
             return 8;
