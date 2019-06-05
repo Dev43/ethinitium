@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "lite-server": "^2.5.3",
-    "truffle-contract": "^4.0.17"
+    "truffle-contract": "^4.0.17",
+    "truffle-hdwallet-provider": "^1.0.10"
   }
 }
